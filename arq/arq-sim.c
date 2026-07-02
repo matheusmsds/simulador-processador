@@ -7,64 +7,50 @@
 
 int main (int argc, char **argv)
 {
+	if (argc != 2) {
+		printf("usage: %s [bin_name]\n", argv[0]);
+		exit(1);
+	}
+
 	// Registrador PC
 	register int programaCounter = 1;
 
 	// Registradores de proposito geral
-	register int r0;
-	register int r1;
-	register int r2;
-	register int r3;
-	register int r4;
-	register int r5;
-	register int r6;
-	register int r7;
+	register int r0 = {0};
+	register int r1 = {0};
+	register int r2 = {0};
+	register int r3 = {0};
+	register int r4 = {0};
+	register int r5 = {0};
+	register int r6 = {0};
+	register int r7 = {0};
 
-	const uint16_t bitsArquivo = extract_bits(); 	// Salvando os bits extraidos vai de 0 à 65535
-	load_binary_to_memory();
+	// criando um vetor, com o proposito de armazenar o binario que sera lido. Tipo uint16_t, armazena apenas numeros positivos, e � inicializado com 0
+	uint16_t memoria[65536] = {0};
+	load_binary_to_memory(argv[1] , memoria , sizeof(memoria));
 
 	// Ciclos do processador Monociclo
-	while(true)
-	{
+	while(true) {
 		// Syscall para acabar
-		if(r0 = 0)
-		{
-			exit(0);
+		switch(codigo) {
+			// SYSCALL
+			case exemploEncerrar
 		}
-		else
-		{
+		else {
 			// Ciclo Fetch
-			while(true)
-			{
-				//malloc - usamos para reservar a quantidade de memória
-				malloc();
-			}
-			// Ciclo Decode
-			while(true)
-			{
+			// Mexer com o PC 
 
-			}
+			// Ciclo Decode
+			const uint16_t bitsArquivo = extract_bits(); 	// Salvando os bits extraidos vai de 0 � 65535
 
 			// Ciclo Execute
-			while(true)
-			{
-
+			switch(codigo) {
+				case ADD
+				//add ...
 			}
-
 			// Ciclo Store
-			while(true)
-			{
-
-			}á uma instrução jump para o 
 			programaCounter++;
 		}
-		if (argc != 2) {
-			printf("usage: %s [bin_name]\n", argv[0]);
-			exit(1);
-		}
-		else{
-			printf("executou");
-		}
-		return 0;
-		}
+	}
+	return 0;
 }
