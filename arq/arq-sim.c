@@ -25,7 +25,7 @@ int main (int argc, char **argv)
 	register int r6 = {0};
 	register int r7 = {0};
 
-	// criando um vetor, com o proposito de armazenar o binario que sera lido. Tipo uint16_t, armazena apenas numeros positivos, e é inicializado com 0
+	// criando um vetor, com o proposito de armazenar o binario que sera lido. Tipo uint16_t, armazena apenas numeros positivos, e Ã© inicializado com 0
 	uint16_t memoria[65536] = {0};
 	load_binary_to_memory(argv[1] , memoria , sizeof(memoria));
 
@@ -41,11 +41,11 @@ int main (int argc, char **argv)
 			// Mexer com o PC 
 
 			// Ciclo Decode
-			const uint16_t bitsArquivo = extract_bits(); 	// Salvando os bits extraidos vai de 0 à 65535
+			const uint16_t bitsArquivo = extract_bits(); 	// Salvando os bits extraidos vai de 0 Ã  65535
 
 			// Ciclo Execute
 			switch(codigo) {
-				case ADD
+				case ADD:
 				//add ...
 			}
 			// Ciclo Store
