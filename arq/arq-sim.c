@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
-#include "funcoesProcessador.c"
+#include "cpuMono.c"
 #include "lib.h"
 
 int main (int argc, char **argv)
@@ -19,7 +19,7 @@ int main (int argc, char **argv)
 
 	load_binary_to_memory(argv[1] , memoria , sizeof(memoria));
 
-	cpuStart();
+	cpuStart(memoria , &programaCounter);
 
 	return 0;
 }
