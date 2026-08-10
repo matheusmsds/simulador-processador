@@ -1,5 +1,5 @@
-#ifndef CPU_FUNCOES_H
-#define CPU_FUNCOES_H
+#ifndef CPU_MONO_H
+#define CPU_MONO_H
 
 #include <stdint.h>
 
