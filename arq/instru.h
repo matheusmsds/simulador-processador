@@ -1,5 +1,5 @@
-#ifndef INS_H
-#define INS_H
+#ifndef INSTRU_H
+#define INSTRU_H
 
 
 #define ADD             0

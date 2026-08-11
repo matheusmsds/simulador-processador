@@ -24,8 +24,8 @@ typedef struct
     uint16_t dadoParaMemoria;         // Valor a ser escrito na memória (STORE)
     uint16_t novoPC;                  // Valor de PC após os desvios;
 
-    int escreverRegistrador;          // 1 se o resultado deve ser escrito em bancoReg[regAlvo]
-    int regAlvo;                      // Registrador que receberá o resultado
+    int escreverRegistrador;          // 1 ou 0 indicando se o resultado deve ser escrito em bancoReg[regAlvo]
+    int regAlvo;                      // Registrador que receberá o resultado, usado para diferenciar as instruções
     int acessarMemoria;               // 0 = false, 1 = LOAD, 2 = STORE
     int atualizaPC;                   // Se o PC foi alterado atualiza (desvio tomado = 1)
     int encerrarPrograma;             // 1 se a instrução deve encerrar a execução (syscall serviço 0)

@@ -28,15 +28,15 @@ void decode(uint16_t instrucao , InstrucaoDecodificada *pontMemoria) {
     }
 }
 
-// execute() SÓ CALCULA. Não escreve em bancoReg, memoria, nem PC.
+// execute(), agora passando para a instruct, não em bancoReg, memoria, nem PC, ou seja tá separadinho.
 void execute(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[]) {
     if(pontMemoria->tipoInstrucao == 0) {
         switch(pontMemoria->opcode) {
             case ADD:
-                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] + bancoReg[pontMemoria->operando2];
-                pontMemoria->escreverRegistrador = 1;
-                pontMemoria->regAlvo = pontMemoria->regDestino;
-                break;
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] + bancoReg[pontMemoria->operando2]; //Executando as operações
+                pontMemoria->escreverRegistrador = 1; // indica se deve ser escrito ou não no store
+                pontMemoria->regAlvo = pontMemoria->regDestino; // Guarda aonde será salvo no banco dos registradores, além de mascarar da onde vem
+                break; 
 
             case SUB:
                 pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] - bancoReg[pontMemoria->operando2];
@@ -139,15 +139,15 @@ void execute(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[]) {
             case SYSCALL:
                 // Serviço 0 (r0 == 0) encerra o programa
                 if (bancoReg[0] == 0) {
-                    pontMemoria->encerrarPrograma = 1;
+                    pontMemoria->encerrarPrograma = 1;  // Muda o valor de encerrarPrograma por ponteiro
                 }
                 break;
         }
     } else {
         switch(pontMemoria->opcode) {
             case JUMP:
-                pontMemoria->novoPC = pontMemoria->imediato;
-                pontMemoria->atualizaPC = 1;
+                pontMemoria->novoPC = pontMemoria->imediato; // novoPC recebe o valor imediato da instrução
+                pontMemoria->atualizaPC = 1; // mesma lógica do escreverRegistrador, indica se foi desviado ou não
                 break;
 
             case JUMP_COND:
@@ -158,7 +158,7 @@ void execute(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[]) {
                 break;
 
             case MOV:
-                pontMemoria->resultadoOPS = pontMemoria->imediato;
+                pontMemoria->resultadoOPS = pontMemoria->imediato; 
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regSalto;
                 break;
@@ -166,14 +166,13 @@ void execute(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[]) {
     }
 }
 
-// store() é o estágio de acesso à memória + write-back: aqui sim os efeitos
-// colaterais acontecem de verdade (escrever em bancoReg, memoria e PC).
+//Agora sim é para salvar as instruções
 void store(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[] , uint16_t memoria[] , uint16_t *programaCounter , int *rodando) {
-    // Acesso à memória (quando a instrução exige)
-    if (pontMemoria->acessarMemoria == 1) {          // LOAD: lê da memória
+    // Caso precise, acessa a memória 
+    if (pontMemoria->acessarMemoria == 1) {          // LOAD lê da memória
         pontMemoria->resultadoOPS = memoria[pontMemoria->enderecoMemoria];
 
-    } else if (pontMemoria->acessarMemoria == 2) {    // STORE: escreve na memória
+    } else if (pontMemoria->acessarMemoria == 2) {    // STORE escreve na memória
         memoria[pontMemoria->enderecoMemoria] = pontMemoria->dadoParaMemoria;
     }
 
