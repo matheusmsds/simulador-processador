@@ -33,91 +33,91 @@ void execute(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[]) {
     if(pontMemoria->tipoInstrucao == 0) {
         switch(pontMemoria->opcode) {
             case ADD:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] + bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] + bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case SUB:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] - bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] - bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case MUL:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] * bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] * bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case DIV:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] / bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] / bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case CMP_EQUAL:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] == bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] == bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case CMP_NEQ:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] != bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] != bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case CMP_LESS:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] < bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] < bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case CMP_GREATER:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] > bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] > bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case CMP_LESS_EQ:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] <= bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] <= bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case CMP_GREATER_EQ:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] >= bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] >= bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case AND:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] & bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] & bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case OR:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] | bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] | bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case XOR:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] ^ bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] ^ bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case SHL:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] << bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] << bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
 
             case SHR:
-                pontMemoria->resultadoALU = bancoReg[pontMemoria->operando1] >> bancoReg[pontMemoria->operando2];
+                pontMemoria->resultadoOPS = bancoReg[pontMemoria->operando1] >> bancoReg[pontMemoria->operando2];
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regDestino;
                 break;
@@ -158,7 +158,7 @@ void execute(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[]) {
                 break;
 
             case MOV:
-                pontMemoria->resultadoALU = pontMemoria->imediato;
+                pontMemoria->resultadoOPS = pontMemoria->imediato;
                 pontMemoria->escreverRegistrador = 1;
                 pontMemoria->regAlvo = pontMemoria->regSalto;
                 break;
@@ -171,14 +171,15 @@ void execute(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[]) {
 void store(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[] , uint16_t memoria[] , uint16_t *programaCounter , int *rodando) {
     // Acesso à memória (quando a instrução exige)
     if (pontMemoria->acessarMemoria == 1) {          // LOAD: lê da memória
-        pontMemoria->resultadoALU = memoria[pontMemoria->enderecoMemoria];
+        pontMemoria->resultadoOPS = memoria[pontMemoria->enderecoMemoria];
+
     } else if (pontMemoria->acessarMemoria == 2) {    // STORE: escreve na memória
         memoria[pontMemoria->enderecoMemoria] = pontMemoria->dadoParaMemoria;
     }
 
     // Write-back: grava o resultado no banco de registradores
     if (pontMemoria->escreverRegistrador) {
-        bancoReg[pontMemoria->regAlvo] = pontMemoria->resultadoALU;
+        bancoReg[pontMemoria->regAlvo] = pontMemoria->resultadoOPS;
     }
 
     // Atualização do PC nos desvios

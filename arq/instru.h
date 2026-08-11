@@ -24,7 +24,7 @@
 
 #define JUMP            0
 #define JUMP_COND       1
-#define MOV             2
+#define MOV             3
 #define SYSCALL         63
 
 

@@ -18,16 +18,16 @@ typedef struct
     uint16_t imediato;               // Registrador imediato das instruções do tipo I
     uint16_t regSalto;                // Caso jump ignora, se jump_cond será executado ou não
 
-    // ---- Campos calculados pelo execute() e usados pelo store() (write-back) ----
-    uint16_t resultadoALU;            // Resultado de operações aritméticas/lógicas ou valor lido do MOV/LOAD
-    uint16_t enderecoMemoria;         // Endereço calculado para LOAD/STORE
+    // Store e Execute
+    uint16_t resultadoOPS;            // Guarda o resultado das operações MOV/LOAD/ADD ...
+    uint16_t enderecoMemoria;         // Endereço da memória calculado para LOAD/STORE
     uint16_t dadoParaMemoria;         // Valor a ser escrito na memória (STORE)
-    uint16_t novoPC;                  // Novo valor do PC, calculado nos desvios (JUMP/JUMP_COND)
+    uint16_t novoPC;                  // Valor de PC após os desvios;
 
     int escreverRegistrador;          // 1 se o resultado deve ser escrito em bancoReg[regAlvo]
-    int regAlvo;                      // Qual registrador receberá o resultado
-    int acessarMemoria;               // 0 = nenhum acesso, 1 = leitura (LOAD), 2 = escrita (STORE)
-    int atualizaPC;                   // 1 se o PC deve ser alterado (desvio tomado)
+    int regAlvo;                      // Registrador que receberá o resultado
+    int acessarMemoria;               // 0 = false, 1 = LOAD, 2 = STORE
+    int atualizaPC;                   // Se o PC foi alterado atualiza (desvio tomado = 1)
     int encerrarPrograma;             // 1 se a instrução deve encerrar a execução (syscall serviço 0)
 
 } InstrucaoDecodificada;
