@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
+#include "instru.h"
 #include "cpuMono.h"
 #include "lib.h"
 
