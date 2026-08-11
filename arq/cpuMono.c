@@ -3,6 +3,7 @@
 
 uint16_t bancoReg[8] = {0};
 
+
 uint16_t fetch(uint16_t memoria[] , uint16_t programaCounter) {
     uint16_t instrucao = memoria[programaCounter]; 
     return memoria[programaCounter];
@@ -121,6 +122,7 @@ void execute(InstrucaoDecodificada *pontMemoria , uint16_t bancoReg[] , uint16_t
             case 3: //MOV:
                 bancoReg[pontMemoria->regSalto] = pontMemoria->imediato;
                 break;
+        }
     }
 }
 
@@ -141,6 +143,6 @@ void cpuStart(uint16_t memoria[] , uint16_t *programaCounter) {
 
         store();
 
-        *(programaCounter)++;
+        (*programaCounter)++;
     }
 }

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
-#include "cpuMono.c"
+#include "cpuMono.h"
 #include "lib.h"
 
 int main (int argc, char **argv)
@@ -12,14 +12,20 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 	// Registrador PC
-	uint16_t programaCounter = 1;
+	uint16_t  programaCounter = 1;
 
 	// criando um vetor, com o proposito de armazenar o binario que sera lido. Tipo uint16_t, armazena apenas numeros positivos, e � inicializado com 0
 	uint16_t memoria[65536] = {0};
 
 	load_binary_to_memory(argv[1] , memoria , sizeof(memoria));
+	
 
 	cpuStart(memoria , &programaCounter);
+	
+	printf("\n--- Registradores ao final da execucao ---\n");
+    for (int i = 0; i < 8; i++) {
+        printf("reg[%d] = %u\n", i, bancoReg[i]);
+    }
 
 	return 0;
 }

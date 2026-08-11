@@ -2,6 +2,7 @@
 #define CPU_MONO_H
 
 #include <stdint.h>
+extern uint16_t bancoReg[8];
 
 typedef struct
 {
@@ -18,5 +19,12 @@ typedef struct
     uint16_t regSalto;       // Caso jump ignora, se jump_cond será executado ou não
 
 } InstrucaoDecodificada;
+
+uint16_t fetch(uint16_t memoria[], uint16_t programaCounter);
+void decode(uint16_t instrucao, InstrucaoDecodificada *pontMemoria);
+void execute(InstrucaoDecodificada *pontMemoria, uint16_t bancoReg[], uint16_t memoria[], uint16_t *programaCounter, int *rodando);
+void store(void);
+void cpuStart(uint16_t memoria[], uint16_t *programaCounter);
+
 
 #endif
