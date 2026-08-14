@@ -2,6 +2,7 @@
 #define EXECUTE_H
 
 #include <stdint.h>
+#include "decode.h"
 
 
 typedef struct
@@ -14,9 +15,10 @@ typedef struct
     int acessarMemoria;               // 0 = false, 1 = LOAD, 2 = STORE
     int encerrarPrograma;             // 1 se a instrução deve encerrar a execução (syscall serviço 0)
     int temInstrucao;
+    int rodando;
 
 } InstrucaoExecute;
 
-void execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16_t bancoReg[] , int houveFlush , int novoProgramaCounter);
+int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16_t bancoReg[] , int houveFlush);
 
 #endif

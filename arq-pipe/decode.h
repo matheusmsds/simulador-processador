@@ -2,6 +2,7 @@
 #define DECODE_H
 
 #include <stdint.h>
+#include "fetch.h"
 
 
 typedef struct
@@ -21,6 +22,6 @@ typedef struct
 
 } InstrucaoDecode;
 
-void decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFlush);
+int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode ,  int houveFlush);
 
 #endif

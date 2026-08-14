@@ -1,143 +1,168 @@
-#include "cpuMono.h"
 #include "lib.h"
+#include "fetch.h"
+#include "decode.h"
+#include "execute.h"
 #include "instru.h"
 
 uint16_t bancoReg[8] = {0};
 
-InstrucaoDecodificada instrucaoDecodificada = {0};
 InstrucaoFetch fetchando = {0};
 InstrucaoDecode decodando = {0};
 InstrucaoExecute executando = {0};
 
+void fetch(InstrucaoFetch *pontFetch , uint16_t memoria[] , uint16_t programaCounter , int houveFlush , int novoProgramaCounter) {
+    if(houveFlush){
+        pontFetch->instrucao = memoria[novoProgramaCounter];
+        pontFetch->pc = novoProgramaCounter;
 
-uint16_t fetch(uint16_t memoria[] , uint16_t programaCounter) {
-    return memoria[programaCounter];
+    }
+    else {
+        pontFetch->instrucao = memoria[programaCounter];
+        pontFetch->pc = programaCounter;
+    }
+    pontFetch->temInstrucao = 1;
+
 }
 
-void decode(uint16_t instrucao , InstrucaoDecode *pontDecode) {
-    pontDecode->tipoInstrucao = extract_bits(instrucao , 15 , 1);
+int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFlush) {
+    uint16_t instrucao = pontFetch->instrucao;
+    if(houveFlush){
+        pontDecode->temInstrucao = 0;
+        return 0;
+    } 
+    else {
+        pontDecode->tipoInstrucao = extract_bits(instrucao , 15 , 1);
 
-    switch(pontDecode->tipoInstrucao) {
-        case 0: // caso R
-            pontDecode->opcode = extract_bits(instrucao , 9 , 6);
-            pontDecode->regDestino = extract_bits(instrucao , 6 , 3);
-            pontDecode->operando1 = extract_bits(instrucao , 3 , 3);
-            pontDecode->operando2 = extract_bits(instrucao , 0 , 3);
-            break;
+        switch(pontDecode->tipoInstrucao) {
+            case 0: // caso R
+                pontDecode->opcode = extract_bits(instrucao , 9 , 6);
+                pontDecode->regDestino = extract_bits(instrucao , 6 , 3);
+                pontDecode->operando1 = extract_bits(instrucao , 3 , 3);
+                pontDecode->operando2 = extract_bits(instrucao , 0 , 3);
+                break;
 
-        case 1: // caso I
-            pontDecode->opcode = extract_bits(instrucao , 13 , 2);
-            pontDecode->regSalto = extract_bits(instrucao , 10 , 3);
-            pontDecode->imediato = extract_bits(instrucao , 0 , 10);
-            break;
+            case 1: // caso I
+                pontDecode->opcode = extract_bits(instrucao , 13 , 2);
+                pontDecode->regSalto = extract_bits(instrucao , 10 , 3);
+                pontDecode->imediato = extract_bits(instrucao , 0 , 10);
+                break;
+        }
+        if(pontDecode->tipoInstrucao && pontDecode->opcode == JUMP) {
+            return pontDecode->imediato;
+        }
     }
+    return 0;
 }
 
 // execute(), agora passando para a instruct, não em bancoReg, memoria, nem PC, ou seja tá separadinho.
-void execute(InstrucaoDecode *pontExecute , uint16_t bancoReg[]) {
-    if(pontExecute->tipoInstrucao == 0) {
-        switch(pontExecute->opcode) {
+int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16_t bancoReg[] , int houveFlush) {
+    if(houveFlush){
+        pontExecute->temInstrucao = 0;
+        return 0;
+    }
+    if(pontDecode->tipoInstrucao == 0) {
+        switch(pontDecode->opcode) {
             case ADD:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] + bancoReg[pontExecute->operando2]; //Executando as operações
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] + bancoReg[pontDecode->operando2]; //Executando as operações
                 pontExecute->escreverRegistrador = 1; // indica se deve ser escrito ou não no store
-                pontExecute->regAlvo = pontExecute->regDestino; // Guarda aonde será salvo no banco dos registradores, além de mascarar da onde vem
+                pontExecute->regAlvo = pontDecode->regDestino; // Guarda aonde será salvo no banco dos registradores, além de mascarar da onde vem
                 break; 
 
             case SUB:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] - bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] - bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case MUL:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] * bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] * bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case DIV:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] / bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] / bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case CMP_EQUAL:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] == bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] == bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case CMP_NEQ:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] != bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] != bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case CMP_LESS:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] < bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] < bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case CMP_GREATER:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] > bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] > bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case CMP_LESS_EQ:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] <= bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] <= bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case CMP_GREATER_EQ:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] >= bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] >= bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case AND:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] & bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] & bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case OR:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] | bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] | bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case XOR:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] ^ bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] ^ bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case SHL:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] << bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] << bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case SHR:
-                pontExecute->resultadoOPS = bancoReg[pontExecute->operando1] >> bancoReg[pontExecute->operando2];
+                pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] >> bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case LOAD:
                 // Calcula o endereço agora; a leitura de fato acontece no store() (acesso à memória)
-                pontExecute->enderecoMemoria = bancoReg[pontExecute->operando1];
+                pontExecute->enderecoMemoria = bancoReg[pontDecode->operando1];
                 pontExecute->acessarMemoria = 1; // leitura
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regDestino;
+                pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
             case STORE:
-                pontExecute->enderecoMemoria = bancoReg[pontExecute->operando1];
-                pontExecute->dadoParaMemoria = bancoReg[pontExecute->operando2];
+                pontExecute->enderecoMemoria = bancoReg[pontDecode->operando1];
+                pontExecute->dadoParaMemoria = bancoReg[pontDecode->operando2];
                 pontExecute->acessarMemoria = 2; // escrita
                 break;
 
@@ -149,30 +174,28 @@ void execute(InstrucaoDecode *pontExecute , uint16_t bancoReg[]) {
                 break;
         }
     } else {
-        switch(pontExecute->opcode) {
-            case JUMP:
-                pontExecute->novoPC = pontExecute->imediato; // novoPC recebe o valor imediato da instrução
-                pontExecute->atualizaPC = 1; // mesma lógica do escreverRegistrador, indica se foi desviado ou não
-                break;
-
+        switch(pontDecode->opcode) {
             case JUMP_COND:
-                if (bancoReg[pontExecute->regSalto] != 0) {
-                    pontExecute->novoPC = pontExecute->imediato;
-                    pontExecute->atualizaPC = 1;
+                if (bancoReg[pontDecode->regSalto] != 0) {
+                    //pontExecute->escreverRegistrador = 0;   // APENAS DESVIARÁ SEM ESCREVER;
+                    //pontExecute->novoPC = pontExecute->imediato; // novoPC recebe o valor imediato da instrução
+                    //pontExecute->atualizaPC = 1;    // mesma lógica do escreverRegistrador, indica se foi desviado ou não
+                    return pontDecode->imediato;
                 }
                 break;
 
             case MOV:
-                pontExecute->resultadoOPS = pontExecute->imediato; 
+                pontExecute->resultadoOPS = pontDecode->imediato; 
                 pontExecute->escreverRegistrador = 1;
-                pontExecute->regAlvo = pontExecute->regSalto;
+                pontExecute->regAlvo = pontDecode->regSalto;
                 break;
         }
     }
+    return 0;
 }
 
 //Agora sim é para salvar as instruções
-void store(InstrucaoExecute *pontExecute , uint16_t bancoReg[] , uint16_t memoria[] , uint16_t *programaCounter , int *rodando) {
+void store(InstrucaoExecute *pontExecute , uint16_t bancoReg[] , uint16_t memoria[] , int *rodando) {
     // Caso precise, acessa a memória 
     if (pontExecute->acessarMemoria == 1) {          // LOAD lê da memória
         pontExecute->resultadoOPS = memoria[pontExecute->enderecoMemoria];
@@ -184,11 +207,6 @@ void store(InstrucaoExecute *pontExecute , uint16_t bancoReg[] , uint16_t memori
     // Write-back: grava o resultado no banco de registradores
     if (pontExecute->escreverRegistrador) {
         bancoReg[pontExecute->regAlvo] = pontExecute->resultadoOPS;
-    }
-
-    // Atualização do PC nos desvios
-    if (pontExecute->atualizaPC) {
-        *programaCounter = pontExecute->novoPC - 1; // -1 pois cpuStart faz PC++ logo depois
     }
 
     // Encerramento do programa (syscall serviço 0)
@@ -203,13 +221,16 @@ void cpuStart(uint16_t memoria[] , uint16_t *programaCounter) {
     uint16_t novoProgramaCounter = 0;
     while(rodando) {
         
-        uint16_t instrucao = fetch(memoria , *programaCounter);
+        fetch(&fetchando , memoria , *programaCounter , houveFlush , novoProgramaCounter);
 
-        decode(instrucao , &instrucaoDecode , *houveFlush , *novoProgramaCounter);
+        int decodar = decode(&fetchando , &decodando , houveFlush);
+        if(decodar != 0){ // vai ter JUMP
 
-        execute(&InstrucaoExecute , bancoReg , *houveFlush , *novoProgramaCounter);
+        }
 
-        store(&InstrucaoExecute , bancoReg , memoria , programaCounter , &rodando);
+        int executar = execute(&decodando , &executando , bancoReg , houveFlush , novoProgramaCounter);
+
+        store(&executando , bancoReg , memoria , &rodando);
 
         (*programaCounter)++;
     }
