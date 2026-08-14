@@ -5,13 +5,14 @@
 #include "instru.h"
 
 uint16_t bancoReg[8] = {0};
+uint16_t novoProgramaCounter = 0;
 
 InstrucaoFetch fetchando = {0};
 InstrucaoDecode decodando = {0};
 InstrucaoExecute executando = {0};
 
-void fetch(InstrucaoFetch *pontFetch , uint16_t memoria[] , uint16_t programaCounter , int houveFlush , int novoProgramaCounter) {
-    if(houveFlush){
+void fetch(InstrucaoFetch *pontFetch , uint16_t memoria[] , uint16_t programaCounter , int houveFlush , uint16_t novoProgramaCounter) {
+    if(houveFlush){                                                         // indica se teve flush, caso tenha ---> bolha, caso não ---> decode normalmente
         pontFetch->instrucao = memoria[novoProgramaCounter];
         pontFetch->pc = novoProgramaCounter;
 
@@ -24,30 +25,30 @@ void fetch(InstrucaoFetch *pontFetch , uint16_t memoria[] , uint16_t programaCou
 
 }
 
-int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFlush) {
+int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFlush) {  // função com retorno para indicar se vai haver JUMP ou não (0 ou 1)
     uint16_t instrucao = pontFetch->instrucao;
-    if(houveFlush){
+    if(houveFlush){                                                         // indica se teve flush, caso tenha ---> bolha, caso não ---> decode normalmente
         pontDecode->temInstrucao = 0;
         return 0;
     } 
     else {
-        pontDecode->tipoInstrucao = extract_bits(instrucao , 15 , 1);
+        pontDecode->tipoInstrucao = extract_bits(instrucao , 15 , 1);       // pegando o primeiro bit, da esquerda para direita
 
         switch(pontDecode->tipoInstrucao) {
             case 0: // caso R
-                pontDecode->opcode = extract_bits(instrucao , 9 , 6);
-                pontDecode->regDestino = extract_bits(instrucao , 6 , 3);
-                pontDecode->operando1 = extract_bits(instrucao , 3 , 3);
-                pontDecode->operando2 = extract_bits(instrucao , 0 , 3);
+                pontDecode->opcode = extract_bits(instrucao , 9 , 6);       // pegando os 9 bits depois do primeiro
+                pontDecode->regDestino = extract_bits(instrucao , 6 , 3);   // pegando os 3 bits depois dos bits de opcode
+                pontDecode->operando1 = extract_bits(instrucao , 3 , 3);    // pegando os 3 bits depois do registrador de destino
+                pontDecode->operando2 = extract_bits(instrucao , 0 , 3);    // pegando os 3 bits depois do operando 1
                 break;
 
             case 1: // caso I
-                pontDecode->opcode = extract_bits(instrucao , 13 , 2);
-                pontDecode->regSalto = extract_bits(instrucao , 10 , 3);
-                pontDecode->imediato = extract_bits(instrucao , 0 , 10);
+                pontDecode->opcode = extract_bits(instrucao , 13 , 2);      // pegando os 2 bits depois do primeiro
+                pontDecode->regSalto = extract_bits(instrucao , 10 , 3);    // pegando os 3 bits depois do opcode
+                pontDecode->imediato = extract_bits(instrucao , 0 , 10);    // pegando os 10 bits depois do registrador de Salto
                 break;
         }
-        if(pontDecode->tipoInstrucao && pontDecode->opcode == JUMP) {
+        if(pontDecode->tipoInstrucao && pontDecode->opcode == JUMP) {       // tratando o JUMP dentro de decode
             return pontDecode->imediato;
         }
     }
@@ -55,8 +56,9 @@ int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFl
 }
 
 // execute(), agora passando para a instruct, não em bancoReg, memoria, nem PC, ou seja tá separadinho.
-int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16_t bancoReg[] , int houveFlush) {
-    if(houveFlush){
+int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16_t bancoReg[] , int houveFlush) { // função com retorno para indicar se vai haver JUMP_COND ou não (0 ou 1)
+    *pontExecute = (InstrucaoExecute){0};
+    if(houveFlush){                                                         // // indica se teve flush, caso tenha ---> bolha, caso não ---> decode normalmente
         pontExecute->temInstrucao = 0;
         return 0;
     }
@@ -218,20 +220,34 @@ void store(InstrucaoExecute *pontExecute , uint16_t bancoReg[] , uint16_t memori
 void cpuStart(uint16_t memoria[] , uint16_t *programaCounter) {
     int rodando = 1;
     int houveFlush = 0;
-    uint16_t novoProgramaCounter = 0;
+
     while(rodando) {
-        
-        fetch(&fetchando , memoria , *programaCounter , houveFlush , novoProgramaCounter);
-
-        int decodar = decode(&fetchando , &decodando , houveFlush);
-        if(decodar != 0){ // vai ter JUMP
-
-        }
-
-        int executar = execute(&decodando , &executando , bancoReg , houveFlush , novoProgramaCounter);
 
         store(&executando , bancoReg , memoria , &rodando);
 
-        (*programaCounter)++;
+        int executar = execute(&decodando , &executando , bancoReg , houveFlush);
+
+        int decodar = decode(&fetchando , &decodando , houveFlush);
+
+        uint16_t novoProgramaCounter = 0;
+        if(executar != 0){ // vai ter JUMP_COND
+            novoProgramaCounter = executar;
+        }
+
+        else if (decodar != 0){ // VAI TER JUMP
+             novoProgramaCounter = decodar;
+        }
+        if (novoProgramaCounter != 0) {
+            *programaCounter = novoProgramaCounter;
+        }
+
+        houveFlush = (novoProgramaCounter != 0);
+
+
+        fetch(&fetchando , memoria , *programaCounter , houveFlush , novoProgramaCounter);
+
+        if(!houveFlush){
+            (*programaCounter)++;
+        }
     }
 }

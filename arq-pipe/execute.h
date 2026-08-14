@@ -20,5 +20,7 @@ typedef struct
 } InstrucaoExecute;
 
 int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16_t bancoReg[] , int houveFlush);
+void store(InstrucaoExecute *pontExecute , uint16_t bancoReg[] , uint16_t memoria[] , int *rodando);
+void cpuStart(uint16_t memoria[] , uint16_t *programaCounter);
 
 #endif

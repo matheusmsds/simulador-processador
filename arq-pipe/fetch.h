@@ -2,6 +2,7 @@
 #define FETCH_H
 
 #include <stdint.h>
+extern uint16_t bancoReg[8];
 
 typedef struct
 {
@@ -11,6 +12,6 @@ typedef struct
 
 } InstrucaoFetch;
 
-void fetch(InstrucaoFetch *proximaInstrucao , uint16_t memoria[], uint16_t programaCounter , int houveFlush , uint16_t *novoProgramaCounter);
+void fetch(InstrucaoFetch *proximaInstrucao , uint16_t memoria[], uint16_t programaCounter , int houveFlush , uint16_t novoProgramaCounter);
 
 #endif
