@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include "instru.h"
-#include "cpuMono.h"
+#include "cpuPipe.h"
 #include "lib.h"
 
 int main (int argc, char **argv)
@@ -15,7 +15,7 @@ int main (int argc, char **argv)
 	// Registrador PC
 	uint16_t  programaCounter = 1;
 
-	// criando um vetor, com o proposito de armazenar o binario que sera lido. Tipo uint16_t, armazena apenas numeros positivos, e � inicializado com 0
+	// criando um vetor, com o proposito de armazenar o binario que sera lido. Tipo uint16_t, armazena apenas numeros positivos, e inicializado com 0
 	uint16_t memoria[65536] = {0};
 
 	load_binary_to_memory(argv[1] , memoria , sizeof(memoria));
