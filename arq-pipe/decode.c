@@ -8,11 +8,12 @@
 int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFlush) {  // função com retorno para indicar se vai haver JUMP ou não (0 ou 1)
     uint16_t instrucao = pontFetch->instrucao;
     printf("DEBUG decode: pc=%u houveFlush=%d\n", pontFetch->pc, houveFlush);
-    if(houveFlush){                                                         // indica se teve flush, caso tenha ---> bolha, caso não ---> decode normalmente
+    if(houveFlush || !pontFetch->temInstrucao){                             // flush, ou pipeline ainda "enchendo" (fetch anterior não tinha instrução real) ---> bolha
         pontDecode->temInstrucao = 0;
         return 0;
     } 
     else {
+        pontDecode->temInstrucao = 1;
         pontDecode->tipoInstrucao = extract_bits(instrucao , 15 , 1);       // pegando o primeiro bit, da esquerda para direita
 
         switch(pontDecode->tipoInstrucao) {

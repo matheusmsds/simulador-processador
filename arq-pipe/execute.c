@@ -6,10 +6,11 @@
 // execute(), agora passando para a instruct, não em bancoReg, memoria, nem PC, ou seja tá separadinho.
 int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16_t bancoReg[] , int houveFlush) { // função com retorno para indicar se vai haver JUMP_COND ou não (0 ou 1)
     *pontExecute = (InstrucaoExecute){0};
-    if(houveFlush){                                                         // // indica se teve flush, caso tenha ---> bolha, caso não ---> decode normalmente
+    if(houveFlush || !pontDecode->temInstrucao){                            // flush, ou bolha vinda do decode (pipeline enchendo) ---> bolha
         pontExecute->temInstrucao = 0;
         return 0;
     }
+    pontExecute->temInstrucao = 1;
     if(pontDecode->tipoInstrucao == 0) {
         switch(pontDecode->opcode) {
             case ADD:
@@ -120,10 +121,9 @@ int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16
                 break;
 
             case SYSCALL:
-                // Serviço 0 (r0 == 0) encerra o programa
-                if (bancoReg[0] == 0) {
-                    pontExecute->encerrarPrograma = 1;  // Muda o valor de encerrarPrograma por ponteiro
-                }
+                // O serviço (definido por r0) é decidido no store(), que é
+                // quem tem acesso à memória pra imprimir strings etc.
+                pontExecute->encerrarPrograma = 1; // reaproveitado aqui como "é um syscall"
                 break;
         }
     } else {

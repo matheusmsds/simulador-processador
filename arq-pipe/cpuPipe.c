@@ -42,6 +42,12 @@ void cpuStart(uint16_t memoria[] , uint16_t *programaCounter) {
 
         fetch(&fetchando , memoria , *programaCounter , houveFlush , novoProgramaCounter);
 
-        (*programaCounter)++;
+        if (fetchando.enderecoPrevisto != 0) {
+            // Preditor disse "desvia": já busca o alvo no próximo ciclo,
+            // sem esperar o desvio ser resolvido de novo no execute/decode.
+            *programaCounter = fetchando.enderecoPrevisto;
+        } else {
+            (*programaCounter)++;
+        }
     }
 }

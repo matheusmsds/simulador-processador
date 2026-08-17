@@ -16,8 +16,32 @@ void store(InstrucaoExecute *pontExecute , uint16_t bancoReg[] , uint16_t memori
         bancoReg[pontExecute->regAlvo] = pontExecute->resultadoOPS;
     }
 
-    // Encerramento do programa (syscall serviço 0)
+    // Dispatch dos serviços de syscall (definidos pelo valor de r0)
     if (pontExecute->encerrarPrograma) {
-        *rodando = 0;
+        switch (bancoReg[0]) {
+            case 0: // encerra o programa
+                *rodando = 0;
+                break;
+
+            case 1: { // imprime string: r1 = endereço, terminada em word 0
+                uint16_t endereco = bancoReg[1];
+                while (memoria[endereco] != 0) {
+                    putchar((char) memoria[endereco]);
+                    endereco++;
+                }
+                break;
+            }
+
+            case 2: // imprime nova linha
+                putchar('\n');
+                break;
+
+            case 3: // imprime inteiro: r1 = valor
+                printf("%u", bancoReg[1]);
+                break;
+
+            default:
+                break; // serviço não implementado
+        }
     }
 }
