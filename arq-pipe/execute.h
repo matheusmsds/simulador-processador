@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "decode.h"
+#include "preditor.h"
 
 
 typedef struct
@@ -15,7 +16,7 @@ typedef struct
     int acessarMemoria;               // 0 = false, 1 = LOAD, 2 = STORE
     int encerrarPrograma;             // 1 se a instrução deve encerrar a execução (syscall serviço 0)
     int temInstrucao;
-    int rodando;
+    uint16_t enderecoPrevisto;
 
 } InstrucaoExecute;
 

@@ -20,6 +20,9 @@ typedef struct
     uint16_t imediato;               // Registrador imediato das instruções do tipo I
     uint16_t regSalto;                // Caso jump ignora, se jump_cond será executado ou não
 
+    uint16_t enderecoPrevisto;
+    uint16_t pc;
+
 } InstrucaoDecode;
 
 int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode ,  int houveFlush);

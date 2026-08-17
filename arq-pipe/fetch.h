@@ -2,6 +2,7 @@
 #define FETCH_H
 
 #include <stdint.h>
+
 extern uint16_t bancoReg[8];
 
 typedef struct
@@ -9,6 +10,7 @@ typedef struct
     uint16_t  pc;
     uint16_t  instrucao;
     int temInstrucao;
+    uint16_t enderecoPrevisto;
 
 } InstrucaoFetch;
 
