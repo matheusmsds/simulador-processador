@@ -3,7 +3,9 @@
 #include <stdint.h>
 #include <assert.h>
 #include "instru.h"
-#include "cpuMono.h"
+#include "fetch.h"
+#include "decode.h"
+#include "execute.h"
 #include "lib.h"
 
 int main (int argc, char **argv)
