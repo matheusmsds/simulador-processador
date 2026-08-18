@@ -128,26 +128,24 @@ int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16
                 if (bancoReg[pontDecode->regSalto] != 0) {
                     enderecoReal = pontDecode->imediato;
                 }
-
-                int indice = pontDecode->pc % 64;
-                Preditor *pontPred = &historicoPredicoes[indice];
-                pontPred->enderecoDesvio = pontDecode->pc;
-                pontPred->enderecoAlvo = pontDecode->imediato;
+                int indice = pontDecode->pc;                            // indice / endereço do histórico
+                Preditor *pontPred = &historicoPredicoes[indice];       
+                pontPred->enderecoAlvo = pontDecode->imediato;          // atualizando o vetor de struct
                 pontPred->validade = 1;
 
-                if (enderecoReal != 0) {
-                    if (pontPred->historicoDesvio < 2) pontPred->historicoDesvio++;
+                if (enderecoReal != 0) {                                // caso realmente é uma predição válida e deve ocorrer
+                    if (pontPred->historicoDesvio < 2) pontPred->historicoDesvio++;    // ++
                 } else {
-                    if (pontPred->historicoDesvio > -1) pontPred->historicoDesvio--;
+                    if (pontPred->historicoDesvio > -1) pontPred->historicoDesvio--;   // --
                 }
 
-                if (pontDecode->enderecoPrevisto == enderecoReal) {
+                if (pontDecode->enderecoPrevisto == enderecoReal) {     // mesma lógica do JUMP, aqui é comparado se foi acertado ou não, caso sim retorna 0
                     return 0;
                 }
-                if (enderecoReal != 0) {
+                if (enderecoReal != 0) {                                // caso: previsão errou, tinha que ter pulado, retorna o pulo
                     return enderecoReal;
                 }
-                return pontDecode->pc + 1;
+                return pontDecode->pc + 1;                              // caso: previsão errour achou que precisava mudar, mas precisa voltar para o original
             }
 
             case MOV:

@@ -9,7 +9,7 @@ typedef struct
 {
     uint16_t tipoInstrucao;           // Tipo da instrução
     uint16_t opcode;                  // Opcode
-    int temInstrucao;
+    int temInstrucao;                 // Para saber se pode continuar executando se tem uma instrucao válida 0 e 1
 
     // Para instruções do tipo R
     uint16_t operando1;               // Operador 1 - "x"

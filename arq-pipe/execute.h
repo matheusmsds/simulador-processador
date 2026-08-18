@@ -15,8 +15,8 @@ typedef struct
     int regAlvo;                      // Registrador que receberá o resultado, usado para diferenciar as instruções
     int acessarMemoria;               // 0 = false, 1 = LOAD, 2 = STORE
     int encerrarPrograma;             // 1 se a instrução deve encerrar a execução (syscall serviço 0)
-    int temInstrucao;
-    uint16_t enderecoPrevisto;
+    int temInstrucao;                 // mesma lógica do decode, para saber se tem uma instrucao válida e continuar executando 0 e 1 
+    uint16_t enderecoPrevisto;        // mesma lógica do decode, endereco previsto para a próxima instrução
 
 } InstrucaoExecute;
 

@@ -19,7 +19,21 @@ void cpuStart(uint16_t memoria[] , uint16_t *programaCounter) {
 
         InstrucaoExecute executando = {0};
 
-        // O input de uma fase é o output para outra fase
+        /* O input de uma fase é o output para outra fase. Também é parecido com uma fila FIFO. O resultado de uma fase é oq alimenta a outra fase, assim temos:
+         execute() - nada ainda 
+         store() - nada ainda
+         decode() - nada 
+         fetch() processo A 
+         
+         execute() - nada ainda
+         store() - nada ainda 
+         decode() - processo A 
+         fetch() -  processo B 
+         
+         executw() - A
+         store() - nada ainda (Não foi gerado um &executando válido)
+         decode() -  processo B 
+         fetch() - processo C */
         
         int executar = execute(&decodando , &executando , bancoReg , houveFlush);
 
@@ -28,11 +42,11 @@ void cpuStart(uint16_t memoria[] , uint16_t *programaCounter) {
         int decodar = decode(&fetchando , &decodando , (executar != 0));
 
         uint16_t novoProgramaCounter = 0;
-        if(executar != 0){ // vai ter JUMP_COND
+        if(executar != 0){ // JUMP_COND PREVISÃO ERRADA
             novoProgramaCounter = executar;             // passando o valor do desvio para o novoProgramaCounter
         }
 
-        else if (decodar != 0){ // VAI TER JUMP
+        else if (decodar != 0){ // JUMP PREVISÃO ERRADA
              novoProgramaCounter = decodar;             // passando o valor do desvio para o novoProgramaCounter
         }
         if (novoProgramaCounter != 0) {     

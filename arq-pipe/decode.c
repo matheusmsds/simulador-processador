@@ -7,12 +7,12 @@
 
 int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFlush) {  // função com retorno para indicar se vai haver JUMP ou não (0 ou 1)
     uint16_t instrucao = pontFetch->instrucao;
-    if(houveFlush || !pontFetch->temInstrucao){                             // flush, ou pipeline ainda "enchendo" (fetch anterior não tinha instrução real) ---> bolha
-        pontDecode->temInstrucao = 0;
+    if(houveFlush || !pontFetch->temInstrucao){                             // flush / limpeza do processador, (fetch anterior não tinha instrução real)
+        pontDecode->temInstrucao = 0;                                       // instrução inválida
         return 0;
     } 
     else {
-        pontDecode->temInstrucao = 1;
+        pontDecode->temInstrucao = 1;                                       // instrucao válida
         pontDecode->tipoInstrucao = extract_bits(instrucao , 15 , 1);       // pegando o primeiro bit, da esquerda para direita
 
         switch(pontDecode->tipoInstrucao) {
@@ -30,22 +30,22 @@ int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFl
                 break;
         }
 
+        // passando as instruções de um estágio para outro (Decode recebendo o endereço previsto e o programaConter (pc))
         pontDecode->enderecoPrevisto = pontFetch->enderecoPrevisto;
         pontDecode->pc = pontFetch->pc;
 
         if(pontDecode->tipoInstrucao && pontDecode->opcode == JUMP) {       // tratando o JUMP dentro de decode
-            int indice = pontFetch-> pc % 64;                               // transformando em indice para armazenamento da predicao e para não termos repetições de indices.
+            int indice = pontFetch-> pc;                                    // transformando em indice para armazenamento da predicao e para não termos repetições de indices.
             Preditor *pontPred = &historicoPredicoes[indice];               // armazenando o enderecoDesvio, o enderecoAlvo, se é válido e se acertou
-            pontPred->enderecoDesvio = pontFetch->pc;
-            pontPred->enderecoAlvo = pontDecode->imediato;
-            pontPred->validade = 1;
+            pontPred->enderecoAlvo = pontDecode->imediato;                  // atualiza o endereço 
+            pontPred->validade = 1;                                         // marca validade do jump
             if(pontPred->historicoDesvio < 2){
-                pontPred->historicoDesvio++;
+                pontPred->historicoDesvio++;                                // atualizando o "histórico de ocorrência"
             }
-            if(pontDecode->enderecoPrevisto == pontDecode->imediato){
+            if(pontDecode->enderecoPrevisto == pontDecode->imediato){       // aqui é comparado se foi acertado ou não, caso sim retorna 0
                 return 0;
             }
-            return pontDecode->imediato;
+            return pontDecode->imediato;                                    // caso contrário retorna o imediato para realizar o pulo
         }
     }
     return 0;
