@@ -2,16 +2,19 @@
 #define FETCH_H
 
 #include <stdint.h>
+
 extern uint16_t bancoReg[8];
 
 typedef struct
 {
-    uint16_t  pc;
-    uint16_t  instrucao;
-    int temInstrucao;
+    uint16_t  pc;                       // Endereço que foi fetchado
+    uint16_t  instrucao;                // Instrucao do pc
+    int temInstrucao;                   // Indica se a instrução do pc é válida
+    uint16_t enderecoPrevisto;          // Previsão do endereço da "próxima" instrução
 
 } InstrucaoFetch;
 
+// Mesma lógica de retornar as instruções da antiga
 void fetch(InstrucaoFetch *proximaInstrucao , uint16_t memoria[], uint16_t programaCounter , int houveFlush , uint16_t novoProgramaCounter);
 
 #endif
