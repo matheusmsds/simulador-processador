@@ -13,97 +13,97 @@ int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16
     pontExecute->temInstrucao = 1;
     if(pontDecode->tipoInstrucao == 0) {
         switch(pontDecode->opcode) {
-            case ADD:
+            case PIPE_ADD:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] + bancoReg[pontDecode->operando2]; //Executando as operações
                 pontExecute->escreverRegistrador = 1; // indica se deve ser escrito ou não no store
                 pontExecute->regAlvo = pontDecode->regDestino; // Guarda aonde será salvo no banco dos registradores, além de mascarar da onde vem
                 break; 
 
-            case SUB:
+            case PIPE_SUB:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] - bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case MUL:
+            case PIPE_MUL:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] * bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case DIV:
+            case PIPE_DIV:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] / bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case CMP_EQUAL:
+            case PIPE_CMP_EQUAL:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] == bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case CMP_NEQ:
+            case PIPE_CMP_NEQ:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] != bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case CMP_LESS:
+            case PIPE_CMP_LESS:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] < bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case CMP_GREATER:
+            case PIPE_CMP_GREATER:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] > bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case CMP_LESS_EQ:
+            case PIPE_CMP_LESS_EQ:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] <= bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case CMP_GREATER_EQ:
+            case PIPE_CMP_GREATER_EQ:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] >= bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case AND:
+            case PIPE_AND:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] & bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case OR:
+            case PIPE_OR:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] | bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case XOR:
+            case PIPE_XOR:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] ^ bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case SHL:
+            case PIPE_SHL:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] << bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case SHR:
+            case PIPE_SHR:
                 pontExecute->resultadoOPS = bancoReg[pontDecode->operando1] >> bancoReg[pontDecode->operando2];
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case LOAD:
+            case PIPE_LOAD:
                 // Calcula o endereço agora; a leitura de fato acontece no store() (acesso à memória)
                 pontExecute->enderecoMemoria = bancoReg[pontDecode->operando1];
                 pontExecute->acessarMemoria = 1; // leitura
@@ -111,19 +111,19 @@ int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16
                 pontExecute->regAlvo = pontDecode->regDestino;
                 break;
 
-            case STORE:
+            case PIPE_STORE:
                 pontExecute->enderecoMemoria = bancoReg[pontDecode->operando1];
                 pontExecute->dadoParaMemoria = bancoReg[pontDecode->operando2];
                 pontExecute->acessarMemoria = 2; // escrita
                 break;
 
-            case SYSCALL:
+            case PIPE_SYSCALL:
                 pontExecute->encerrarPrograma = 1; // alteramos o valor da struct via ponteiro, que depois é passado a struct para store() com seu parametro *rodando e é alterado
                 break;
         }
     } else {
         switch(pontDecode->opcode) {
-            case JUMP_COND: {
+            case PIPE_JUMP_COND: {
                 uint16_t enderecoReal = 0;
                 if (bancoReg[pontDecode->regSalto] != 0) {
                     enderecoReal = pontDecode->imediato;
@@ -148,7 +148,7 @@ int execute(InstrucaoDecode *pontDecode , InstrucaoExecute *pontExecute , uint16
                 return pontDecode->pc + 1;                              // caso: previsão errour achou que precisava mudar, mas precisa voltar para o original
             }
 
-            case MOV:
+            case PIPE_MOV:
                 pontExecute->resultadoOPS = pontDecode->imediato; 
                 pontExecute->escreverRegistrador = 1;
                 pontExecute->regAlvo = pontDecode->regSalto;

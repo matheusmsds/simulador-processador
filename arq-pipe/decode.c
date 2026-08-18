@@ -34,7 +34,7 @@ int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFl
         pontDecode->enderecoPrevisto = pontFetch->enderecoPrevisto;
         pontDecode->pc = pontFetch->pc;
 
-        if(pontDecode->tipoInstrucao && pontDecode->opcode == JUMP) {       // tratando o JUMP dentro de decode
+        if(pontDecode->tipoInstrucao && pontDecode->opcode == PIPE_JUMP) {       // tratando o JUMP dentro de decode
             int indice = pontFetch-> pc;                                    // transformando em indice para armazenamento da predicao e para não termos repetições de indices.
             Preditor *pontPred = &historicoPredicoes[indice];               // armazenando o enderecoDesvio, o enderecoAlvo, se é válido e se acertou
             pontPred->enderecoAlvo = pontDecode->imediato;                  // atualiza o endereço 
