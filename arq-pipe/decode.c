@@ -7,7 +7,6 @@
 
 int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFlush) {  // função com retorno para indicar se vai haver JUMP ou não (0 ou 1)
     uint16_t instrucao = pontFetch->instrucao;
-    printf("DEBUG decode: pc=%u houveFlush=%d\n", pontFetch->pc, houveFlush);
     if(houveFlush || !pontFetch->temInstrucao){                             // flush, ou pipeline ainda "enchendo" (fetch anterior não tinha instrução real) ---> bolha
         pontDecode->temInstrucao = 0;
         return 0;
@@ -35,8 +34,8 @@ int decode(InstrucaoFetch *pontFetch , InstrucaoDecode *pontDecode , int houveFl
         pontDecode->pc = pontFetch->pc;
 
         if(pontDecode->tipoInstrucao && pontDecode->opcode == JUMP) {       // tratando o JUMP dentro de decode
-            int indice = pontFetch-> pc % 64;
-            Preditor *pontPred = &historicoPredicoes[indice];
+            int indice = pontFetch-> pc % 64;                               // transformando em indice para armazenamento da predicao e para não termos repetições de indices.
+            Preditor *pontPred = &historicoPredicoes[indice];               // armazenando o enderecoDesvio, o enderecoAlvo, se é válido e se acertou
             pontPred->enderecoDesvio = pontFetch->pc;
             pontPred->enderecoAlvo = pontDecode->imediato;
             pontPred->validade = 1;

@@ -3,24 +3,20 @@
 #include <stdio.h>
 
 void fetch(InstrucaoFetch *pontFetch , uint16_t memoria[] , uint16_t programaCounter , int houveFlush , uint16_t novoProgramaCounter) {
-    // A instrução BUSCADA é sempre a que está de fato no endereço correto
-    // (nunca substituída pela predição - a predição só sugere o PRÓXIMO
-    // endereço a ser buscado, não troca a instrução buscada agora).
-    uint16_t enderecoBusca = houveFlush ? novoProgramaCounter : programaCounter;
-
-    pontFetch->instrucao = memoria[enderecoBusca];
-    pontFetch->pc = enderecoBusca;
-    pontFetch->temInstrucao = 1;
-
-    if (houveFlush) {
-        // Endereço acabou de ser corrigido por um flush: ainda não faz
-        // sentido prever nada pra ele neste ciclo.
-        pontFetch->enderecoPrevisto = 0;
+    uint16_t enderecoBusca;                                     // Define qual endereço vai ser tomado, se é novoProgramaCounter ou programaCounter, de acordo se houve ou não um flush das instruções antigas
+    if(houveFlush){
+        enderecoBusca = novoProgramaCounter;                    // Houve um flush, continuar do novo endereço de memória do novoProgramaCounter
     } else {
-        // Se ESTA instrução (pelo seu próprio endereço) já foi vista como
-        // desvio antes, o preditor sugere onde buscar no PRÓXIMO ciclo.
-        pontFetch->enderecoPrevisto = previsao(enderecoBusca);
+        enderecoBusca = programaCounter;                        // Não houve flush, continuar normalmente
     }
 
-    printf("DEBUG fetch: pc=%u instrucao=%u houveFlush_usado=%d\n", pontFetch->pc, pontFetch->instrucao, houveFlush);
+    pontFetch->instrucao = memoria[enderecoBusca];              // Pegando a instrucao do endereco
+    pontFetch->pc = enderecoBusca;                              // Salvando o lugar da memória que está a instrução
+    pontFetch->temInstrucao = 1;                                // Validando se tem a instrução
+
+    if (houveFlush) {
+        pontFetch->enderecoPrevisto = 0;                        // Houve um flush, ignoramos o endereçoPrevisto pelo previsor
+    } else {
+        pontFetch->enderecoPrevisto = previsao(enderecoBusca);  // Não houve flush, então vai continuar fazendo a previsão de endereços
+    }
 }
